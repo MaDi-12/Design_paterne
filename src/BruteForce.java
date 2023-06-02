@@ -30,7 +30,8 @@ public class BruteForce extends Hashing {
 
         for (int i = 0; i < count; i++) {
             StringBuilder password = new StringBuilder();
-            for (int j = 0; j < 2; j++) {
+            for (int j = 0; j < 5
+            ; j++) {
                 int index = random.nextInt(alphabet.length());
                 char lettre = alphabet.charAt(index);
                 password.append(lettre);

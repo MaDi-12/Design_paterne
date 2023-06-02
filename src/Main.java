@@ -22,7 +22,7 @@ public class Main {
         scanner.nextLine();  
 
         while (hash.equals("")) {
-            System.out.println("\nVeuillez donner le hash:");
+            System.out.println("\nVeuillez donner le hash du mot:");
             hash = scanner.nextLine();
         }
 
