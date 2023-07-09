@@ -7,7 +7,20 @@ public class Fabrique {
         if (type.equals("brute")) {
             myHash= new BruteForce();
         }
+
         return myHash;
+
+    }
+      public static PasswordCracker getPassword(String type){
+        PasswordCracker passwordCracker = null;
+        if (type.equals("Pdictionnary")) {
+            passwordCracker = new DictionaryCracker();
+        }
+        if (type.equals("Pbrute")) {
+            passwordCracker = new BruteForceCracker();
+        }
+        
+        return passwordCracker;
 
     }
 }

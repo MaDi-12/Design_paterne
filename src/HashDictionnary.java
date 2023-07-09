@@ -20,7 +20,7 @@ class HashDictionnary extends Hashing {
         Random random = new Random();
         boolean isFound=false;
 
-        //on recupere d'abors tous les mots de passe dans une liste de chaine de caracteres
+        //on recupere d'abords tous les mots de passe dans une liste de chaine de caracteres
         List<String> passwords = readCSV(passwordsFile.getPath(),10);
         int randomIndex;
         String randomPassword="not found";
@@ -28,10 +28,10 @@ class HashDictionnary extends Hashing {
         while (!isFound) {
 
             randomIndex = random.nextInt(passwords.size());
-            System.out.println(randomIndex);
+            System.out.println("index"+randomIndex+"\t");
             randomPassword=passwords.get(randomIndex);
             System.out.println("test taille"+hashLenght);
-            System.out.println(randomPassword);
+            System.out.println("randomPassword:"+randomPassword);
 
             // on va faire un controle pour verifier le type de hash fournis et quel traitement faire
 
@@ -61,21 +61,42 @@ class HashDictionnary extends Hashing {
     // la fonction qui permet de lire les documents csv 
 
     private static List<String> readCSV(String filePath, int limit) {
-        List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            int count = 0; // Compteur pour suivre le nombre de mots lus
-            while ((line = reader.readLine()) != null && count <= limit) {
-                if (count > 1) {
-                    lines.add(line);
+    List<String> lines = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        int count = 0; // Counter to track the number of lines read
+        while ((line = reader.readLine()) != null && count <= limit) {
+            if (count > 1) {
+                String[] parts = line.split(","); // Split the line by comma
+                if (parts.length > 1) {
+                    lines.add(parts[1]); // Add the text after the comma to the list
                 }
-                count++;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            count++;
         }
-        return lines;
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+    return lines;
+}
+
+
+    // private static List<String> readCSV(String filePath, int limit) {
+    //     List<String> lines = new ArrayList<>();
+    //     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+    //         String line;
+    //         int count = 0; // Compteur pour suivre le nombre de mots lus
+    //         while ((line = reader.readLine()) != null && count <= limit) {
+    //             if (count > 1) {
+    //                 lines.add(line);
+    //             }
+    //             count++;
+    //         }
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return lines;
+    // }
     
 
     //la fonction qui permet d'hasher en SHAH-256 ou MD5 
@@ -103,13 +124,3 @@ class HashDictionnary extends Hashing {
     
     
 }
-
-// public class Main {
-//     public static void main(String[] args) {
-//         int hashLength = 64; // Longueur du hachage (par exemple, 32 pour MD5)
-//         String hash = "002698c66c4c0415df8eacf9db45d9a4ba88ec0b67e08a92200d0d49148d51a6"; // Hachage à rechercher
-
-//         String password = HashDictionnary.getPassword(hashLength, hash);
-//         System.out.println("Le mot de passe correspondant est : " + password);
-//     }
-// }
