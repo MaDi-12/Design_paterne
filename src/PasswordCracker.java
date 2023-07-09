@@ -1,9 +1,11 @@
 import java.io.*;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,8 +95,8 @@ class DictionaryCracker extends PasswordCracker {
     }
 
     //methode pour craquer par requette http
-    public String getPassword() throws IOException, InterruptedException{
-    // client HTTP
+    public String getPassword() throws IOException, InterruptedException{        
+        // client HTTP
         HttpClient client = HttpClient.newHttpClient();
 
         // URL 
@@ -121,8 +123,8 @@ class DictionaryCracker extends PasswordCracker {
                 // Envoie de la  requête et recuperation de la réponse
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 // le code de retour
-                int statusCode = response.statusCode();
-                if (statusCode == 200) {
+                //int statusCode = response.statusCode();
+                if (response.body().contains("Authentification réussie")) {
                     // Authentification réussie
                     return "Authentification réussie 😎!\n le mot de passe etait :"+line;
                     
@@ -146,9 +148,4 @@ class DictionaryCracker extends PasswordCracker {
                 .orElse("");
         return HttpRequest.BodyPublishers.ofString(formData);
     }
-    
-
 }
-
-    
-
