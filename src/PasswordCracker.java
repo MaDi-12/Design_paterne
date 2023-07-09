@@ -1,11 +1,9 @@
 import java.io.*;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,7 +93,9 @@ class DictionaryCracker extends PasswordCracker {
     }
 
     //methode pour craquer par requette http
-    public String getPassword() throws IOException, InterruptedException{        
+    public String getPassword() throws IOException, InterruptedException{  
+        
+        long startTime = System.currentTimeMillis();
         // client HTTP
         HttpClient client = HttpClient.newHttpClient();
 
@@ -126,7 +126,9 @@ class DictionaryCracker extends PasswordCracker {
                 //int statusCode = response.statusCode();
                 if (response.body().contains("Authentification réussie")) {
                     // Authentification réussie
-                    return "Authentification réussie 😎!\n le mot de passe etait :"+line;
+                    long endTime = System.currentTimeMillis();
+                    long executionTime = endTime - startTime;
+                    return "Authentification réussie 😎!\n le mot de passe etait :"+line+"\n Le temps mis est: "+executionTime/1000+"secondes";
                     
                 }
             }
@@ -135,12 +137,13 @@ class DictionaryCracker extends PasswordCracker {
                 reader.close();
             }
         }
-
-        return "Malheureusement on a pas pue cracker votre le mot de passe😔";
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+        return "Malheureusement on a pas pue cracker votre le mot de passe😔"+"\n Le temps mis est: "+executionTime/1000+"secondes";
 
     }
 
-    // Méthode utilitaire pour construire les données du formulaire
+    // Méthode utilitaire pour construire les données du formulaire qui sera utiliser dans getPassword
     private static HttpRequest.BodyPublisher buildFormData(Map<String, String> data) {
         String formData = data.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
