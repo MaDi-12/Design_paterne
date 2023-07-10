@@ -8,19 +8,16 @@ public class Main {
         String option = "";
         String hash = "";
         Hashing myHash;
-        PasswordCracker myPassword;
+        PasswordCracker myPassword = null;
         String mot_de_passe;
 
-
-    
-
         while (userChoice <= 0 || userChoice > 3) {
-            System.out.println("\n\n#### Veuillez choisir une option #####\n\n1_Cracker un mot de passe \n2_Cracker un hash\n 3_Cracker par requette HTTP\n\n");
+            System.out.println("\n\n#### Veuillez choisir une option #####\n\n1_Cracker un mot de passe \n2_Cracker un hash\n3_Cracker par requête HTTP\n\n");
             userChoice = scanner.nextInt();
         }
 
-        if (userChoice==2) {
-            userChoice=0;
+        if (userChoice == 2) {
+            userChoice = 0;
             while (userChoice <= 0 || userChoice > 2) {
                 System.out.println("\n\n#### Veuillez choisir une option #####\n\n1_Brute Force \n2_Dictionnary\n\n");
                 userChoice = scanner.nextInt();
@@ -30,63 +27,61 @@ public class Main {
                     option = "brute";
                     break;
                 case 2:
-                    option = "dictionnary";
+                    option = "dictionary";
                     break;
             }
-            scanner.nextLine();  
+            scanner.nextLine();
 
             while (hash.equals("")) {
                 System.out.println("\nVeuillez donner le hash du mot:");
                 hash = scanner.nextLine();
             }
 
-            System.out.println(hash);
             myHash = Fabrique.getHashing(option);
-            System.out.println("le mot de passe correspondant est :"+myHash.getPassword(hash));
-        }
-        else if (userChoice==1){
+            System.out.println("Le mot de passe correspondant est : " + myHash.getPassword(hash));
+        } else if (userChoice == 1) {
             userChoice = 0;
             while (userChoice <= 0 || userChoice > 2) {
                 System.out.println("Choisissez une option pour cracker un mot de passe :");
                 System.out.println("1. Cracker un mot de passe en utilisant Brute Force");
-                System.out.println("2. Cracker un mot de passe en utilisant Dictionnaire Attack");
+                System.out.println("2. Cracker un mot de passe en utilisant Dictionary Attack");
                 userChoice = scanner.nextInt();
             }
             switch (userChoice) {
-                case 2 :
-                    option = "Pdictionnary";
+                case 2:
+                    option = "dictionary";
                     break;
                 case 1:
-                    option = "Pbrute";
+                    option = "brute";
                     break;
             }
-            scanner.nextLine(); //pour vider le tampon
+            scanner.nextLine(); // Pour vider le tampon
             System.out.print("Veuillez saisir votre mot de passe : ");
             mot_de_passe = scanner.nextLine();
-            myPassword=Fabrique.getPassword(option);
+            myPassword = Fabrique.getPassword(option);
             myPassword.crackPassword(mot_de_passe);
-        }
-        else{
+        } else if (userChoice == 3) {
             userChoice = 0;
             while (userChoice <= 0 || userChoice > 2) {
-                System.out.println("Choisissez une option pour cracker  :");
+                System.out.println("Choisissez une option pour cracker :");
                 System.out.println("1. Cracker un mot de passe en utilisant Brute Force");
-                System.out.println("2. Cracker un mot de passe en utilisant Dictionnaire Attack");
+                System.out.println("2. Cracker un mot de passe en utilisant Dictionary Attack");
                 userChoice = scanner.nextInt();
             }
             switch (userChoice) {
-                case 2 :
-                    option = "Pdictionnary";
+                case 2:
+                    option = "dictionary";
                     break;
                 case 1:
-                    option = "Pbrute";
+                    option = "brute";
                     break;
             }
-            myPassword=Fabrique.getPassword(option);
-            System.out.println(myPassword.getPassword());
-        
+            myPassword = Fabrique.getPassword(option);
+            if (myPassword != null) { // Vérifiez si myPassword est null avant d'appeler getPassword()
+                System.out.println(myPassword.getPassword());
+            } else {
+                System.out.println("Option invalide. Aucun cracker de mot de passe correspondant.");
+            }
         }
-       
-        
     }
 }

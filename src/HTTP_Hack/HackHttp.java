@@ -13,7 +13,7 @@ public class HackHttp {
         HttpClient client = HttpClient.newHttpClient();
 
         // URL 
-        String loginUrl = "http://localhost:8888/TP_PC/verification.php";
+        String loginUrl = "http://localhost/TP_PC/verification.php";
 
         // données d'identification
         Map<String, String> formData = new HashMap<>();

